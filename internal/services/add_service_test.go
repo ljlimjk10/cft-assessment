@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddService_ValidInput(t *testing.T) {
@@ -15,27 +17,20 @@ func TestAddService_ValidInput(t *testing.T) {
 	data.Set("b", "3")
 
 	req, err := http.NewRequest("POST", "/add", strings.NewReader(data.Encode()))
-	if err != nil {
-		t.Fatalf("Could not create request: %v", err)
-	}
+	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	rr := httptest.NewRecorder()
 	AddService(rr, req)
 
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("AddService returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
+	assert.Equal(t, http.StatusOK, rr.Code, "Expected status OK")
 
 	var response map[string]int
-	if err := json.NewDecoder(rr.Body).Decode(&response); err != nil {
-		t.Fatalf("Failed to decode JSON response: %v", err)
-	}
+	err = json.NewDecoder(rr.Body).Decode(&response)
+	assert.NoError(t, err, "Failed to decode JSON response")
 
-	expected := map[string]int{"result": 8} // 5 + 3 = 8
-	if response["result"] != expected["result"] {
-		t.Errorf("AddService returned unexpected result: got %v want %v", response["result"], expected["result"])
-	}
+	expected := map[string]int{"result": 8}
+	assert.Equal(t, expected["result"], response["result"], "Unexpected result in AddService")
 }
 
 func TestAddService_InvalidInput(t *testing.T) {
@@ -44,20 +39,14 @@ func TestAddService_InvalidInput(t *testing.T) {
 	data.Set("b", "3")
 
 	req, err := http.NewRequest("POST", "/add", strings.NewReader(data.Encode()))
-	if err != nil {
-		t.Fatalf("Could not create request: %v", err)
-	}
+	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	rr := httptest.NewRecorder()
 	AddService(rr, req)
 
-	if status := rr.Code; status != http.StatusBadRequest {
-		t.Errorf("AddService returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
+	assert.Equal(t, http.StatusBadRequest, rr.Code, "Expected status Bad Request")
 
-	expected := "Invalid input: 'a' must be an integer\n"
-	if rr.Body.String() != expected {
-		t.Errorf("AddService returned unexpected body: got %v want %v", rr.Body.String(), expected)
-	}
+	expectedBody := "Invalid input: 'a' must be an integer\n"
+	assert.Equal(t, expectedBody, rr.Body.String(), "Unexpected response body")
 }

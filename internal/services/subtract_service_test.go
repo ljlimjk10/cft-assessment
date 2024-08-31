@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSubtractService_ValidInput(t *testing.T) {
@@ -15,28 +17,20 @@ func TestSubtractService_ValidInput(t *testing.T) {
 	data.Set("b", "4")
 
 	req, err := http.NewRequest("POST", "/subtract", strings.NewReader(data.Encode()))
-	if err != nil {
-		t.Fatalf("Could not create request: %v", err)
-	}
+	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	rr := httptest.NewRecorder()
-
 	SubtractService(rr, req)
 
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("SubtractService returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
+	assert.Equal(t, http.StatusOK, rr.Code)
 
 	var response map[string]int
-	if err := json.NewDecoder(rr.Body).Decode(&response); err != nil {
-		t.Fatalf("Failed to decode JSON response: %v", err)
-	}
+	err = json.NewDecoder(rr.Body).Decode(&response)
+	assert.NoError(t, err)
 
 	expected := map[string]int{"result": 6}
-	if response["result"] != expected["result"] {
-		t.Errorf("SubtractService returned unexpected result: got %v want %v", response["result"], expected["result"])
-	}
+	assert.Equal(t, expected["result"], response["result"])
 }
 
 func TestSubtractService_InvalidInput(t *testing.T) {
@@ -45,21 +39,14 @@ func TestSubtractService_InvalidInput(t *testing.T) {
 	data.Set("b", "4")
 
 	req, err := http.NewRequest("POST", "/subtract", strings.NewReader(data.Encode()))
-	if err != nil {
-		t.Fatalf("Could not create request: %v", err)
-	}
+	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	rr := httptest.NewRecorder()
-
 	SubtractService(rr, req)
 
-	if status := rr.Code; status != http.StatusBadRequest {
-		t.Errorf("SubtractService returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
 
 	expected := "Invalid input: 'a' must be an integer\n"
-	if rr.Body.String() != expected {
-		t.Errorf("SubtractService returned unexpected body: got %v want %v", rr.Body.String(), expected)
-	}
+	assert.Equal(t, expected, rr.Body.String())
 }

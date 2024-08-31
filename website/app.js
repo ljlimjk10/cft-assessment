@@ -9,12 +9,12 @@ document
 	});
 
 function sendRequest(endpoint) {
-	const a = document.getElementById("number1").value || "0";
-	const b = document.getElementById("number2").value || "0";
+	const num1 = document.getElementById("number1").value || "0";
+	const num2 = document.getElementById("number2").value || "0";
 
 	const formData = new URLSearchParams();
-	formData.append("a", a);
-	formData.append("b", b);
+	formData.append("num1", num1);
+	formData.append("num2", num2);
 
 	fetch(endpoint, {
 		method: "POST",

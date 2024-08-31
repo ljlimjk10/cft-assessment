@@ -13,8 +13,8 @@ import (
 
 func TestSubtractService_ValidInput(t *testing.T) {
 	data := url.Values{}
-	data.Set("a", "10")
-	data.Set("b", "4")
+	data.Set("num1", "10")
+	data.Set("num2", "4")
 
 	req, err := http.NewRequest("POST", "/subtract", strings.NewReader(data.Encode()))
 	assert.NoError(t, err)
@@ -35,8 +35,8 @@ func TestSubtractService_ValidInput(t *testing.T) {
 
 func TestSubtractService_InvalidInput(t *testing.T) {
 	data := url.Values{}
-	data.Set("a", "ten")
-	data.Set("b", "4")
+	data.Set("num1", "ten")
+	data.Set("num2", "4")
 
 	req, err := http.NewRequest("POST", "/subtract", strings.NewReader(data.Encode()))
 	assert.NoError(t, err)
@@ -47,6 +47,6 @@ func TestSubtractService_InvalidInput(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 
-	expected := "Invalid input: 'a' must be an integer\n"
+	expected := "Invalid input: 'Number 1' must be an integer\n"
 	assert.Equal(t, expected, rr.Body.String())
 }

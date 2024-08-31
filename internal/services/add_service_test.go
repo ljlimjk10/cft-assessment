@@ -13,8 +13,8 @@ import (
 
 func TestAddService_ValidInput(t *testing.T) {
 	data := url.Values{}
-	data.Set("a", "5")
-	data.Set("b", "3")
+	data.Set("num1", "5")
+	data.Set("num2", "3")
 
 	req, err := http.NewRequest("POST", "/add", strings.NewReader(data.Encode()))
 	assert.NoError(t, err)
@@ -35,8 +35,8 @@ func TestAddService_ValidInput(t *testing.T) {
 
 func TestAddService_InvalidInput(t *testing.T) {
 	data := url.Values{}
-	data.Set("a", "five")
-	data.Set("b", "3")
+	data.Set("num1", "five")
+	data.Set("num2", "3")
 
 	req, err := http.NewRequest("POST", "/add", strings.NewReader(data.Encode()))
 	assert.NoError(t, err)
@@ -47,6 +47,6 @@ func TestAddService_InvalidInput(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, rr.Code, "Expected status Bad Request")
 
-	expectedBody := "Invalid input: 'a' must be an integer\n"
+	expectedBody := "Invalid input: 'Number 1' must be an integer\n"
 	assert.Equal(t, expectedBody, rr.Body.String(), "Unexpected response body")
 }

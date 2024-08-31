@@ -13,21 +13,21 @@ func AddService(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	aStr := r.FormValue("a")
-	a, err := strconv.Atoi(aStr)
+	numOneStr := r.FormValue("num1")
+	num1, err := strconv.Atoi(numOneStr)
 	if err != nil {
-		http.Error(w, "Invalid input: 'a' must be an integer", http.StatusBadRequest)
+		http.Error(w, "Invalid input: 'Number 1' must be an integer", http.StatusBadRequest)
 		return
 	}
 
-	bStr := r.FormValue("b")
-	b, err := strconv.Atoi(bStr)
+	numTwoStr := r.FormValue("num2")
+	num2, err := strconv.Atoi(numTwoStr)
 	if err != nil {
-		http.Error(w, "Invalid input: 'b' must be an integer", http.StatusBadRequest)
+		http.Error(w, "Invalid input: 'Number 2' must be an integer", http.StatusBadRequest)
 		return
 	}
 
-	result := a + b
+	result := num1 + num2
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]int{"result": result})
